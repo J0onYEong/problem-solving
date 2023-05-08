@@ -5,12 +5,28 @@
 
 using namespace std;
 
+int find_root(int parent[], int node);
+
+bool union_node(int parent[], int node1, int node2) {
+    int r1 = find_root(parent, node1);
+    int r2 = find_root(parent, node2);
+    if(r1 != r2) {
+        if(r1 < r2) parent[r2] = r1;
+        else parent[r1] = r2;
+        return true;
+    }
+    return false;
+}
+
+int find_root(int parent[], int node) {
+    if(parent[node] == node) 
+        return node;
+    return parent[node] = find_root(parent, parent[node]);
+}
+
 void solution() {
     int v, e;
     cin >> v >> e;
-
-    int group[10001];
-    memset(group, -1, sizeof(int)*10001);
 
     vector<pair<int, edge> > edges;
 
@@ -23,42 +39,23 @@ void solution() {
 
     sort(edges.begin(), edges.end());
 
-    int groupIndex = 0;
-    int edgeCount = 0;
     ll result = 0;
+    int edgeCount = 0;
+    int parent[10001];
+    for(int i=1; i<=v; i++) 
+        parent[i] = i;
 
-    for(auto d : edges) {
-        int v = d.first;
-        int lhs = d.second.first;
-        int rhs = d.second.second;
-        if(group[lhs] == group[rhs]) {
-            if(group[lhs] == -1) {
-                group[lhs] = groupIndex;
-                group[rhs] = groupIndex++;
-                result+=v;
-                edgeCount++;
-            } else {
-                // cycle
-                continue;
-            }
-        } else {
-            result+=v;
+    for(auto e : edges) {
+        int n1 = e.second.first;
+        int n2 = e.second.second;
+        if(union_node(parent, n1, n2)) {
+            result+=e.first;
             edgeCount++;
-            if(group[lhs] == -1) {
-                group[lhs] = group[rhs];
-            } else if(group[rhs] == -1) {
-                group[rhs] = group[lhs];
-            } else {
-                int sg = group[lhs];
-                for(int i=1; i<=10000; i++)
-                    if(group[i] == sg)
-                        group[i] = group[rhs];
-            }
         }
-
         if(edgeCount == v-1)
             break;
     }
+    
     cout << result << endl;
 }
 
