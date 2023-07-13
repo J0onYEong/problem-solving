@@ -16,7 +16,6 @@ ll sum[max_n];
 
 int com_map[max_coor];
 vector<event> coordi;
-vector<range> org;
 
 void input() {
     cin >> N >> M;
@@ -29,7 +28,6 @@ void input() {
         cin >> s >> e;
         coordi.push_back({s, 1});
         coordi.push_back({e+1, -1});
-        org.push_back({s, e});
     }
 }
 
@@ -41,7 +39,7 @@ void solution() {
     for(int i=1; i<=N; i++)
         sum[i] = sum[i-1] + A[i];
 
-    sort(coordi.begin(), coordi.end(), [](const event& l, const event& r){return l.first==r.first?l.second>r.second:l.first<r.first;});
+    sort(coordi.begin(), coordi.end());
 
     ll min_result = 0;
     ll max_result = 0;
