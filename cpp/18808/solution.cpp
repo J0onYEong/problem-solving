@@ -12,7 +12,7 @@ int cnt = 0;
 행렬의 회전 알고리즘
 A = max(N, M)
 90도 시계방향 회전: i, j => j, A-i-1
-90도 반시계방향 회전: i, j => N-1-j, i
+90도 반시계방향 회전:   
 */
 
 void turnSticker(int &r, int &c, int sticker[10][10]) {

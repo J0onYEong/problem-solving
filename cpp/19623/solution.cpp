@@ -44,7 +44,13 @@ void solution() {
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(NULL);
-    solution();
+    // solution();
+
+    vector<pair<int, int> > a;
+
+    a.push_back({1,2});
+
+    cout << a.size();
 
     return 0;
 }

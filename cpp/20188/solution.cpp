@@ -3,56 +3,18 @@
 #define endl "\n"
 
 using namespace std;
-const int max_n = 300001;
 
-const int max_p = 15;
-
-int rtn[max_n];
-
-int ancestor[max_n][max_p];
-
-vector<int> edge[max_n];
-
+const int max_n = 3000001;
 
 int N;
 
-void to_root(int node, int value, int parent) {
-    rtn[node] = value;
+int src[max_n];
 
-    for(int child : edge[node]) {
-        if(child != parent) {
-            ancestor[child][0] = node;
-            to_root(child, value+1, node);
-        }
-    }
-}
+vector<int> children[max_n];
 
-int findLCA(int node1, int node2) {
-    int d1 = rtn[node1];
-    int d2 = rtn[node2];
+vector<pair<int, int>> edges;
 
-    if(d1 < d2)
-        swap(node1, node2);
-
-    for(int i=(max_p-1); i >= 0; i--) {
-        int temp = ancestor[node1][i];
-        if(rtn[temp] >= rtn[node2])
-            node1 = temp;
-    }
-
-    if(node1 == node2)
-        return node1;
-
-    int lca;
-    for(int i=(max_p-1); i >= 0; i--) {
-        if(ancestor[node1][i] != ancestor[node2][i]) {
-            node1 = ancestor[node1][i];
-            node2 = ancestor[node2][i];
-        }
-        lca = ancestor[node1][i];
-    }
-    return lca;
-}
+int depth[max_n];
 
 void input() {
     cin >> N;
@@ -60,33 +22,36 @@ void input() {
     for(int i=1; i<=N-1; i++) {
         int a, b;
         cin >> a >> b;
-        edge[a].push_back(b);
-        edge[b].push_back(a);
+        children[a].push_back(b);
+        children[b].push_back(a);
+        edges.push_back({a, b});
     }
+}
+
+int count_sub_root(int node, int parent, int level) {
+    depth[node] = level;
+    int& ref = src[node];
+    
+    for(int child : children[node]) {
+        if(child == parent)
+            continue;
+        ref += count_sub_root(child, node, level+1);
+    }
+    return 1 + ref;
 }
 
 void solution() {
     input();
 
-    memset(ancestor, 0, sizeof(ancestor));
-    //1. 1번루트까지의 거리 + 첫번째 조상 설정
-    //+ 1번루트까지의 거리는 곧 depth를 의미함을 인지하자
-    to_root(1, 0, -1);
-    //2. ancester배열을 완성한다.
-    for(int i=1; i<max_p; i++)
-        for(int node=2; node<=N; node++)
-            ancestor[node][i] = ancestor[ancestor[node][i-1]][i-1];
-    
-    //3. 두노드의 LCA를 찾으면서 오솔길 수를 알아낸다.
-    int result = 0;
-    for(int i=1; i<=N; i++) {
-        for(int j=i+1; j<=N; j++) {
-            int t = result;
-            int lca = findLCA(i, j);
-            result += rtn[i] - rtn[lca];
-            result += rtn[j] - rtn[lca];
-            result += rtn[lca];
-        }
+    memset(src, 0, sizeof(src));
+    count_sub_root(1, -1, 0);
+
+    ll whole = N * (N-1) / 2;
+    ll result = 0;
+    for(auto edge : edges) {
+        int tar = depth[edge.first] > depth[edge.second] ? edge.first : edge.second;
+        ll x = N - src[tar] - 1;
+        result += (whole - x*(x-1)/2);
     }
     cout << result << endl;
 }

@@ -31,7 +31,6 @@ int dijkstra(int start, int end) {
         int cum_cost = pq.top().first;
         int now_node = pq.top().second;
         pq.pop();
-
         d[now_node] = cum_cost;
 
         if(now_node == end) 
@@ -40,7 +39,7 @@ int dijkstra(int start, int end) {
         for(auto an : vertice[now_node].adjNodes) {
             int cost = an.first;
             int next_node = an.second;
-            if(d[next_node] > cum_cost + cost) {
+            if(d[next_node]==INF) {
                 CumulatedEdge temp;
                 temp.first = cum_cost + cost;
                 temp.second= next_node;
