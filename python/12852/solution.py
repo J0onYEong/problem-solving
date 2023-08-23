@@ -4,25 +4,17 @@ ipt = sys.stdin.readline
 
 X = int(ipt())
 
-dp = [-1 for _ in range(1000000+1)]
-dp[1] = 0
-def recursive(number):
-    global dp
-    if number == 1:
-        return 0
-    if dp[number] != -1:
-        return dp[number]
-    result = 1000000
-    if number % 3 == 0:
-        result = min(result, recursive(number//3))
-    if number % 2 == 0:
-        result = min(result, recursive(number//2))
-    result = min(result, recursive(number-1))
+dp = [0, 0, 1, 1]
 
-    dp[number]=result+1
-    return dp[number]
+for i in range(4, X+1):
+    temp = dp[i-1] + 1
+    if i % 3 == 0:
+        temp = min(temp, dp[i//3]+1)
+    if i % 2 == 0:
+        temp = min(temp, dp[i//2]+1)
+    dp.append(temp)
 
-calc_cnt = recursive(X)
+calc_cnt = dp[X]
 print(calc_cnt)
 temp = X
 result = [X]
