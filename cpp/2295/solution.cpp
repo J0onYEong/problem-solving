@@ -23,7 +23,7 @@ void input() {
 void solution() {
     input();
 
-    map<int, int> apb;
+    vector<int> apb;
 
     sort(number_set.begin(), number_set.end());
 
@@ -32,9 +32,11 @@ void solution() {
             int a = number_set[i];
             int b = number_set[j];
 
-            apb[a + b] = 1;
+            apb.push_back(a+b);
         }   
     }
+
+    sort(apb.begin(), apb.end());
  
     for(int i=n-1; i>=0; i--) {
         for(int j=i; j>=0; j--) {
@@ -42,9 +44,18 @@ void solution() {
             int c = number_set[j];
             int dmc = d-c;
 
-            if(apb[dmc] == 1) {
-                cout << d << endl;
-                return;
+            int l = 0, r = apb.size()-1;
+
+            while(l <= r) {
+                int m = (l + r) / 2;
+
+                if(dmc == apb[m]) {
+                    cout << d << endl;
+                    return;
+                } else if(dmc < apb[m])
+                    r = m-1;
+                else
+                    l = m+1;
             }
         }   
     }
