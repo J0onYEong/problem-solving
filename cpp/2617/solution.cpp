@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <queue>
 #define ll long long
 #define endl "\n"
 
@@ -54,26 +55,92 @@ int recursive(int current, const vector<vector<int>> &relation) {
     return cnt;
 }
 
+
 void solution() {
 
     input();
 
     int result = 0;
 
+    // DFS
+    // for(int i=0; i<N; i++) {
+
+    //     isVisited = vector<bool>(N, false);
+
+    //     int smallerNodeCnt = recursive(i, correct_list);
+
+    //     isVisited = vector<bool>(N, false);
+
+    //     int biggerNodeCnt = recursive(i, reverse_list);
+
+    //     if(smallerNodeCnt > N/2 || biggerNodeCnt >N/2) {
+
+    //         result++;
+    //     } 
+    // }
+
+
+    // BFS
     for(int i=0; i<N; i++) {
 
+
+        queue<int> q;
+
         isVisited = vector<bool>(N, false);
 
-        int smallerNodeCnt = recursive(i, correct_list);
+        q.push(i);
+
+        int bigger_cnt = 0;
+
+        // 자신보다 무거운 것
+        while(!q.empty()) {
+
+            int current = q.front();
+
+            q.pop();
+
+            for(int nxt : correct_list[current]) {
+
+                if(!isVisited[nxt]) {
+
+                    isVisited[nxt] = true;
+
+                    bigger_cnt++;
+
+                    q.push(nxt);
+                }
+            }
+        }
 
         isVisited = vector<bool>(N, false);
 
-        int biggerNodeCnt = recursive(i, reverse_list);
+        q.push(i);
 
-        if(smallerNodeCnt > N/2 || biggerNodeCnt >N/2) {
+        int smaller_cnt = 0;
 
-            result++;
-        } 
+        while(!q.empty()) {
+
+            int current = q.front();
+
+            q.pop();
+
+            for(int nxt : reverse_list[current]) {
+
+                if(!isVisited[nxt]) {
+
+                    isVisited[nxt] = true;
+
+                    smaller_cnt++;
+
+                    q.push(nxt);
+                }
+            }
+        }
+
+        if(bigger_cnt > N/2 || smaller_cnt >N/2) {
+
+            result ++;
+        }
     }
 
     cout << result << endl;
