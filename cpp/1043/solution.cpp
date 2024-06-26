@@ -47,19 +47,6 @@ void input() {
             cin >> party_member;
 
             party[i].push_back(party_member);
-
-            if(member[party_member]) {
-
-                flag = true;
-            }
-        }
-
-        if(flag) {
-
-            for(auto m : party[i]) {
-
-                member[m] = true;
-            }
         }
     }
 
