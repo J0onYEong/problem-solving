@@ -8,9 +8,31 @@ using namespace std;
 
 int N, M;
 
-unordered_map<int, bool> member;
-
 vector<vector<int>> party;
+vector<int> parent;
+
+unordered_map<int, bool> truth_people;
+
+int find_root(int member) {
+
+    int p = parent[member];
+
+    if(member == p) 
+        return p;
+    else 
+        return parent[member] = find_root(p);
+}
+
+void union_people(int m1, int m2) {
+
+    int p1 = find_root(m1);
+    int p2 = find_root(m2);
+
+    if(p1 < p2)
+        parent[p2] = p1;
+    else if(p2 < p1) 
+        parent[p1] = p2;
+}
 
 void input() {
 
@@ -18,18 +40,22 @@ void input() {
 
     party = vector<vector<int>>(M, vector<int>());
 
-    for(int i=1; i<=N; i++) 
-        member[i] = false;
+    parent = vector<int>(N+1, -1);
+
+    for(int i=1; i<=N; i++)
+        parent[i] = i;
 
     int truth_cnt;
     cin >> truth_cnt;
 
+    vector<int> truth_members;
+
     for(int i=0; i<truth_cnt; i++) {
 
         int truth_member;
-        cin >> truth_member;
+        cin >> truth_member;   
 
-        member[truth_member] = true;
+        truth_members.push_back(truth_member);
     }
 
     for(int i=0; i<M; i++) {
@@ -38,42 +64,33 @@ void input() {
 
         cin >> member_cnt;
 
-        bool flag = false;
+        int prev, current;
 
         for(int j=0; j<member_cnt; j++) {
 
-            int party_member;
+            cin >> current;
 
-            cin >> party_member;
+            party[i].push_back(current);
 
-            party[i].push_back(party_member);
+            if(j > 0)
+                union_people(prev, current);
+
+            prev = current;
         }
     }
 
-    for(int k=0; k<M; k++) {
+    for(auto m : truth_members) {
 
-        for(int i=M-1; i>=0; i--) {
+        int r = find_root(m);
 
-            bool flag = false;
-
-            for(auto m : party[i]) {
-
-                if(member[m]) {
-
-                    flag = true;
-                    break;
-                }
-            }  
-
-            if(flag) {
-
-                for(auto m : party[i]) {
-
-                    member[m] = true;
-                }
-            }
-        }
+        truth_people[r] = true;
     }
+
+    // for(int i=1; i<=N; i++) {
+
+    //     cout << parent[i] << " ";
+    // }
+    // cout << endl;
 }
 
 void solution() {
@@ -81,20 +98,11 @@ void solution() {
 
     int cnt = 0;
 
-    for(int i=0; i<party.size(); i++) {
+    for(int i=0; i<M; i++) {
 
-        bool flag = true;
+        int r = find_root(party[i][0]);
 
-        for(auto p : party[i]) {
-
-            if(member[p]) {
-
-                flag = false;
-                break;
-            }
-        }
-
-        if(flag)
+        if(!truth_people[r]) 
             cnt++;
     }
 
